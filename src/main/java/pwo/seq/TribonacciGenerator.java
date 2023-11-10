@@ -2,17 +2,18 @@ package pwo.seq;
 
 import java.math.BigDecimal;
 
-public class TribonacciGenerator extends
-        FibonacciGenerator {
+public class TribonacciGenerator extends FibonacciGenerator {
+
+    private BigDecimal f_3;
 
     public TribonacciGenerator() {
-        f_3 = new BigDecimal(0);
+        reset();
     }
 
     @Override
     public void reset() {
         super.reset();
-        f_3 = new BigDecimal(0);
+        f_3 = BigDecimal.ZERO;
     }
 
     @Override
@@ -22,12 +23,20 @@ public class TribonacciGenerator extends
             f_3 = f_2;
             f_2 = f_1;
             f_1 = current;
-        } else if (lastIndex == 2) {
-            current = new BigDecimal(1);
         } else {
-            current = new BigDecimal(0);
+            current = BigDecimal.valueOf(lastIndex > 0 ? 1 : 0);
         }
         lastIndex++;
         return current;
+    }
+
+    public BigDecimal previousTerm() {
+        if (lastIndex > 2) {
+            return f_3;
+        } else if (lastIndex == 2) {
+            return f_2;
+        } else {
+            return BigDecimal.ZERO;
+        }
     }
 }

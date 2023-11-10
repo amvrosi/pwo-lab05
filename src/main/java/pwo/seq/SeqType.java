@@ -1,42 +1,39 @@
 package pwo.seq;
 
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public enum SeqType {
-    FIB,
-    LUC,
-    TRI;
+    FIB(FibonacciGenerator::new),
+    LUC(LucasGenerator::new),
+    TRI(TribonacciGenerator::new);
 
-    private static final int B = 0;
     private static final String FIX_SEQTYPE = "Problem in " + SeqType.class.getName();
+    private static final Map<String, SeqType> TYPE_MAP;
 
     static {
-        Stream.of(SeqType.values()).forEach(t -> {
-            int L = t.toString().length();
-            if (L != 3) {
-                throw new IllegalStateException(FIX_SEQTYPE);
-            }
-        });
+        TYPE_MAP = Arrays.stream(SeqType.values())
+                .collect(Collectors.toMap(type -> type.toString(), Function.identity()));
+
+        if (Arrays.stream(SeqType.values()).anyMatch(t -> t.toString().length() != 3)) {
+            throw new IllegalStateException(FIX_SEQTYPE);
+        }
+    }
+
+    private final Supplier<Generator> generatorSupplier;
+
+    SeqType(Supplier<Generator> generatorSupplier) {
+        this.generatorSupplier = generatorSupplier;
     }
 
     public static SeqType fromString(String type) {
-        try {
-            return valueOf(type.trim().substring(B, type.length()).toUpperCase());
-        } catch (NullPointerException | StringIndexOutOfBoundsException | IllegalArgumentException ex) {
-            return null;
-        }
+        return TYPE_MAP.get(type.trim().toUpperCase());
     }
 
     public Generator getGenerator() {
-        switch (this) {
-            case FIB:
-                return new FibonacciGenerator();
-            case LUC:
-                return new LucasGenerator();
-            case TRI:
-                return new TribonacciGenerator();
-            default:
-                throw new IllegalStateException(FIX_SEQTYPE);
-        }
+        return generatorSupplier.get();
     }
 }

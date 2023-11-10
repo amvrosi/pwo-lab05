@@ -7,6 +7,7 @@ public interface SequenceGenerator {
     void reset();
 
     BigDecimal nextTerm();
+    BigDecimal previousTerm();
 
     BigDecimal getTerm(int i);
 }
